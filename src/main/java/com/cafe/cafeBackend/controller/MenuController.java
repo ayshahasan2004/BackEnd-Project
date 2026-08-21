@@ -15,7 +15,7 @@ public class MenuController {
 
     private final MenuService menuService;
 
-    @GetMapping("/getmenu")
+    @GetMapping
     public List<MenuCategoryDto> getMenu() {
         return menuService.getMenu();
     }
