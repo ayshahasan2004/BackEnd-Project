@@ -8,7 +8,7 @@ import com.cafe.cafeBackend.repository.MenuItemRepository;
 import com.cafe.cafeBackend.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import com.cafe.cafeBackend.aop.LogExecutionTime;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
-
+    @LogExecutionTime
     public OrderResponse createOrder(OrderRequest request, String userEmail) {
 
         List<Long> itemIds = request.items().stream().map(Long::valueOf).toList();
