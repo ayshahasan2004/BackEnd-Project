@@ -30,6 +30,7 @@ public class AuthService {
 
         userRepository.save(newUser);
 
+        return new AuthResponse(String.valueOf(newUser.getId()), newUser.getEmail(), "temporary-fake-token");    }
 
     public AuthResponse login(LoginRequest request) {
         user existingUser = userRepository.findByEmail(request.email())
@@ -39,4 +40,5 @@ public class AuthService {
             throw new IllegalStateException("Invalid email or password");
         }
 
+        return new AuthResponse(String.valueOf(existingUser.getId()), existingUser.getEmail(), "temporary-fake-token");    }
 }
