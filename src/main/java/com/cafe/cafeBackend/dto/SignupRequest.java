@@ -1,5 +1,19 @@
 package com.cafe.cafeBackend.dto;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-public record SignupRequest(String name, String phone, String email, String password) {
+public record SignupRequest(        @NotBlank(message = "Name is required")
+                                    String name,
+
+                                    @NotBlank(message = "Phone is required")
+                                    String phone,
+
+                                    @NotBlank(message = "Email is required")
+                                    @Email(message = "Invalid email format")
+                                    String email,
+
+                                    @Size(min = 6, message = "Password must be at least 6 characters")
+                                    String password) {
 
 }
