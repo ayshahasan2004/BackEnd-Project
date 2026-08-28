@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @Entity
 @Table(name = "users")
 @Data
@@ -12,16 +11,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long  Id;
-    private String name ;
+    private Long id;
+
+    private String name;
+
     private String phone;
+
     @Column(unique = true, nullable = false)
     private String email;
-    @Column(nullable = false)
 
+    @Column(nullable = false)
     private String password;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;

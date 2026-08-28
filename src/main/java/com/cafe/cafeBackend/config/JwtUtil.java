@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
@@ -20,10 +21,12 @@ public class JwtUtil {
     private long expirationMs;
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        return Keys.hmacShaKeyFor(
+                secret.getBytes(StandardCharsets.UTF_8)
+        );
     }
 
-    //generate JWT containing email and role
+    // Generate JWT containing email + role
     public String generateToken(String email, Role role) {
 
         Date now = new Date();
@@ -38,7 +41,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    //extract email from token
+    // Extract email from token
     public String extractEmail(String token) {
 
         Claims claims = Jwts.parser()
@@ -50,8 +53,8 @@ public class JwtUtil {
         return claims.getSubject();
     }
 
-    //extract role from token
-    public Role extractRole(String token) {
+    // Extract role from token
+    public String extractRole(String token) {
 
         Claims claims = Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -59,16 +62,13 @@ public class JwtUtil {
                 .parseSignedClaims(token)
                 .getPayload();
 
-        String role = claims.get("role", String.class);
-
-        return Role.valueOf(role);
+        return claims.get("role", String.class);
     }
 
-    //check if token is valid and not expired
+    // Check if token is valid and not expired
     public boolean isTokenValid(String token) {
 
         try {
-
             Jwts.parser()
                     .verifyWith(getSigningKey())
                     .build()
@@ -77,7 +77,6 @@ public class JwtUtil {
             return true;
 
         } catch (Exception e) {
-
             return false;
         }
     }

@@ -1,6 +1,7 @@
 package com.cafe.cafeBackend.config;
 
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,14 +28,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http)
+            throws Exception {
 
         http
 
-                //JWT authentication does not need CSRF
+                // JWT API → disable CSRF
                 .csrf(csrf -> csrf.disable())
 
-                //jWT = Stateless
+                // JWT is stateless
                 .sessionManagement(sm ->
                         sm.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
@@ -42,86 +44,115 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**")
-                        .permitAll()
+
+                        // =========================
+                        // AUTH
+                        // =========================
+
+                        .requestMatchers(
+                                "/api/auth/**"
+                        ).permitAll()
+
+
+                        // =========================
+                        // SWAGGER
+                        // =========================
 
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**"
-                        )
-                        .permitAll()
+                        ).permitAll()
 
-                        //everyone can view menu
+
+                        // =========================
+                        // MENU
+                        // =========================
+
+                        // Everyone can view menu
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/menu/**"
-                        )
-                        .permitAll()
+                        ).permitAll()
 
-                        //only ADMIN can modify menu
+                        // Only ADMIN can modify menu
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/menu/**"
-                        )
-                        .hasRole("ADMIN")
+                        ).hasRole("ADMIN")
 
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/menu/**"
-                        )
-                        .hasRole("ADMIN")
+                        ).hasRole("ADMIN")
 
                         .requestMatchers(
                                 HttpMethod.DELETE,
                                 "/api/menu/**"
-                        )
-                        .hasRole("ADMIN")
+                        ).hasRole("ADMIN")
 
-                        //CUSTOMER and ADMIN can create orders
+
+                        // =========================
+                        // ORDERS
+                        // =========================
+
+                        // CUSTOMER + ADMIN can create orders
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/orders/**"
+                        ).hasAnyRole(
+                                "CUSTOMER",
+                                "ADMIN"
                         )
-                        .hasAnyRole("CUSTOMER", "ADMIN")
 
-                        //only ADMIN can modify orders
+                        // Only ADMIN can update orders
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/orders/**"
-                        )
-                        .hasRole("ADMIN")
+                        ).hasRole("ADMIN")
 
+                        // Only ADMIN can delete orders
                         .requestMatchers(
                                 HttpMethod.DELETE,
                                 "/api/orders/**"
-                        )
-                        .hasRole("ADMIN")
-                        //CUSTOMER and ADMIN can create reservations
+                        ).hasRole("ADMIN")
+
+
+                        // =========================
+                        // RESERVATIONS
+                        // =========================
+
+                        // CUSTOMER + ADMIN can create reservations
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/reservations/**"
+                        ).hasAnyRole(
+                                "CUSTOMER",
+                                "ADMIN"
                         )
-                        .hasAnyRole("CUSTOMER", "ADMIN")
 
-                        //only ADMIN can modify reservations
+                        // Only ADMIN can update reservations
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/reservations/**"
-                        )
-                        .hasRole("ADMIN")
+                        ).hasRole("ADMIN")
 
+                        // Only ADMIN can delete reservations
                         .requestMatchers(
                                 HttpMethod.DELETE,
                                 "/api/reservations/**"
-                        )
-                        .hasRole("ADMIN")
+                        ).hasRole("ADMIN")
 
-                        .anyRequest()
-                        .authenticated()
+
+                        // =========================
+                        // EVERYTHING ELSE
+                        // =========================
+
+                        .anyRequest().authenticated()
                 )
 
+                // JWT filter
                 .addFilterBefore(
                         jwtAuthFilter,
                         UsernamePasswordAuthenticationFilter.class

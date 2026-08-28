@@ -1,9 +1,9 @@
 package com.cafe.cafeBackend.controller;
 
 import com.cafe.cafeBackend.model.User;
+import com.cafe.cafeBackend.repository.UserRepository;
 import com.cafe.cafeBackend.service.AdminService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -12,13 +12,21 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final AdminService adminService;
+    private final UserRepository userRepository;
 
-    @PutMapping("/promote/{userId}")
-    public ResponseEntity<User> promoteToAdmin(
-            @PathVariable Long userId) {
+    // Search user by email
+    @GetMapping("/users")
+    public User getUserByEmail(@RequestParam String email) {
 
-        User user = adminService.promoteToAdmin(userId);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new IllegalStateException("User not found")
+                );
+    }
+    // Promote CUSTOMER to ADMIN
+    @PutMapping("/users/{userId}/promote")
+    public User promoteToAdmin(@PathVariable Long userId) {
 
-        return ResponseEntity.ok(user);
+        return adminService.promoteToAdmin(userId);
     }
 }

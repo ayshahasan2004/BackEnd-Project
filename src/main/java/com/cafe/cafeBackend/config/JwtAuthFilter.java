@@ -1,11 +1,11 @@
 package com.cafe.cafeBackend.config;
 
-import com.cafe.cafeBackend.model.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -41,33 +41,38 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
-        //no JWT
+        // No Authorization header
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 
             filterChain.doFilter(request, response);
             return;
         }
 
+        // Get token
         String token = authHeader.substring(7);
 
-        //check JWT
+        // Validate token
         if (jwtUtil.isTokenValid(token)) {
 
+            // Get email
             String email = jwtUtil.extractEmail(token);
 
-            Role role = jwtUtil.extractRole(token);
+            // Get role
+            String role = jwtUtil.extractRole(token);
 
-            //spring Security expects ROLE_ prefix
+            // Convert role to Spring Security authority
             SimpleGrantedAuthority authority =
-                    new SimpleGrantedAuthority("ROLE_" + role.name());
+                    new SimpleGrantedAuthority("ROLE_" + role);
 
-            var authentication =
+            // Create authentication
+            UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             email,
                             null,
                             List.of(authority)
                     );
 
+            // Store authentication
             SecurityContextHolder.getContext()
                     .setAuthentication(authentication);
         }
