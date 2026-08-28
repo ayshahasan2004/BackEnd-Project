@@ -1,4 +1,5 @@
 package com.cafe.cafeBackend.config;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,9 +21,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain)
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+
+        String path = request.getServletPath();
+
+        return path.startsWith("/swagger-ui/")
+                || path.equals("/swagger-ui.html")
+                || path.startsWith("/v3/api-docs");
+    }
+
+    @Override
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
@@ -36,8 +48,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         if (jwtUtil.isTokenValid(token)) {
             String email = jwtUtil.extractEmail(token);
-            var authentication = new UsernamePasswordAuthenticationToken(email, null, List.of());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            var authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            email,
+                            null,
+                            List.of()
+                    );
+
+            SecurityContextHolder.getContext()
+                    .setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);
