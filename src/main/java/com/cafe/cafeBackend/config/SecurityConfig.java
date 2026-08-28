@@ -45,18 +45,9 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // =========================
-                        // AUTH
-                        // =========================
-
                         .requestMatchers(
                                 "/api/auth/**"
                         ).permitAll()
-
-
-                        // =========================
-                        // SWAGGER
-                        // =========================
 
                         .requestMatchers(
                                 "/swagger-ui.html",
@@ -64,19 +55,11 @@ public class SecurityConfig {
                                 "/v3/api-docs",
                                 "/v3/api-docs/**"
                         ).permitAll()
-
-
-                        // =========================
-                        // MENU
-                        // =========================
-
-                        // Everyone can view menu
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/menu/**"
                         ).permitAll()
 
-                        // Only ADMIN can modify menu
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/menu/**"
@@ -91,11 +74,6 @@ public class SecurityConfig {
                                 HttpMethod.DELETE,
                                 "/api/menu/**"
                         ).hasRole("ADMIN")
-
-
-                        // =========================
-                        // ORDERS
-                        // =========================
 
                         // CUSTOMER + ADMIN can create orders
                         .requestMatchers(
@@ -117,12 +95,6 @@ public class SecurityConfig {
                                 HttpMethod.DELETE,
                                 "/api/orders/**"
                         ).hasRole("ADMIN")
-
-
-                        // =========================
-                        // RESERVATIONS
-                        // =========================
-
                         // CUSTOMER + ADMIN can create reservations
                         .requestMatchers(
                                 HttpMethod.POST,
@@ -143,12 +115,6 @@ public class SecurityConfig {
                                 HttpMethod.DELETE,
                                 "/api/reservations/**"
                         ).hasRole("ADMIN")
-
-
-                        // =========================
-                        // EVERYTHING ELSE
-                        // =========================
-
                         .anyRequest().authenticated()
                 )
 
