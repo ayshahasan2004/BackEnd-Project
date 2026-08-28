@@ -1,5 +1,6 @@
 package com.cafe.cafeBackend.config;
 
+import com.cafe.cafeBackend.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -22,35 +23,61 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    //////generate a JWT token that contains the users email and an expiration date
-    public String generateToken(String email) {
+    //generate JWT containing email and role
+    public String generateToken(String email, Role role) {
+
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
                 .subject(email)
+                .claim("role", role.name())
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    //////return the email that in the token
+    //extract email from token
     public String extractEmail(String token) {
+
         Claims claims = Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+
         return claims.getSubject();
     }
 
-    /////check if the token correct and not expired
+    //extract role from token
+    public Role extractRole(String token) {
+
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        String role = claims.get("role", String.class);
+
+        return Role.valueOf(role);
+    }
+
+    //check if token is valid and not expired
     public boolean isTokenValid(String token) {
+
         try {
-            Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token);
+
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
+
             return true;
+
         } catch (Exception e) {
+
             return false;
         }
     }
