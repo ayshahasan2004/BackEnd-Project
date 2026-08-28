@@ -9,5 +9,4 @@ class CafeBackendApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
