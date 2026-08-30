@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class user {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long  Id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String Id;
     private String name ;
     private String phone;
     @Column(unique = true, nullable = false)
