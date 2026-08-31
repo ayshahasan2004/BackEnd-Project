@@ -17,7 +17,7 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final MenuItemRepository menuItemRepository;
+    public final MenuItemRepository menuItemRepository;
 
     public OrderResponse createOrder(OrderRequest request, String userEmail) {
 
@@ -40,11 +40,11 @@ public class OrderService {
                 .items(items)
                 .total(realTotal)
                 .userEmail(userEmail)
-                .confirmedAt(LocalDateTime.now())
+                .confirmed_at(LocalDateTime.now())
                 .build();
 
         orderRepository.save(order);
 
-        return new OrderResponse(String.valueOf(order.getId()), order.getConfirmedAt().toString());
+        return new OrderResponse(String.valueOf(order.getId()), order.getConfirmed_at().toString());
     }
 }
