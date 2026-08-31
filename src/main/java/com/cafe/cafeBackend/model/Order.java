@@ -18,7 +18,7 @@ public class Order {
     private String name;
     private Double total;
     private String userEmail;
-    private LocalDateTime confirmedAt;
+    private LocalDateTime confirmed_at;
 
     @ManyToMany
     @JoinTable(
