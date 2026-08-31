@@ -6,7 +6,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "menu_categories")
-@Data @NoArgsConstructor @AllArgsConstructor @Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MenuCategory {
 
     @Id

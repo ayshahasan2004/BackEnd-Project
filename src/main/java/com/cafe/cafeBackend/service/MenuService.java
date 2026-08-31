@@ -16,6 +16,7 @@ import java.util.List;
 public class MenuService {
 
     private final MenuCategoryRepository menuCategoryRepository;
+    private final ItemMapper itemMapper;
 
     public List<MenuCategoryDto> getMenu() {
         List<MenuCategory> categories = menuCategoryRepository.findAll();
@@ -25,12 +26,7 @@ public class MenuService {
 
             List<MenuItemDto> itemDtos = new ArrayList<>();
             for (MenuItem item : category.getItems()) {
-                MenuItemDto itemDto = new MenuItemDto(
-                        String.valueOf(item.getId()),
-                        item.getName(),
-                        item.getNote(),
-                        item.getPrice()
-                );
+                ItemResponse response = itemMapper.toResponse(item);
                 itemDtos.add(itemDto);
             }
 
